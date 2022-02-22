@@ -1,0 +1,10 @@
+{
+  "instances": [
+    {
+      "routerName": "miamisite1",
+      "nodeName": "branchoffice3",
+      "location": "+47.6062-122.3321/",
+      "hwType": "Silicom"
+    }
+  ]
+}

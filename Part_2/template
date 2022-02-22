@@ -1,0 +1,130 @@
+{% for instance in instances %}
+
+{% if instance.hwType == "Silicom" %}
+  {% assign mpls1_pci = "0000:00:04.0" %}
+  {% assign lan1_pci = "0000:00:03.0" %}
+  {% assign wan1_pci = "0000:00:05.0" %}
+{% else %}
+  {% assign mpls1_pci = "0000:00:05.0" %}
+  {% assign lan1_pci = "0000:00:04.0" %}
+  {% assign wan1_pci = "0000:00:06.0" %}
+{% endif %}
+
+{% assign service_routes = "testservice2, dnat-testservice3, lb-testservice" | split: ", " %}
+
+{% editgroup %}
+{
+  "authority": {
+    "router": [
+      {
+        "name": "{{ instance.routerName }}",
+        "interNodeSecurity": "aes1",
+        "locationCoordinates": "{{ instance.location }}",
+        "node": [
+          {
+            "name": "{{ instance.nodeName }}",
+            "role": "combo",
+            "deviceInterface": [
+              {
+                "name": "mpls1",
+                "pciAddress": {{ mpls1_pci }},
+                "networkInterface": [
+                  {
+                    "name": "dc1",
+                    "interRouterSecurity": "aes1",
+                    "address": [
+                      {
+                        "ipAddress": "10.0.128.0",
+                        "prefixLength": "31",
+                        "gateway": "10.0.128.1"
+                      }
+                    ],
+                    "neighborhood": [
+                      {
+                        "name": "mpls",
+                        "vector": "mpls"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "lan1",
+                "pciAddress": {{ lan1_pci }},
+                "networkInterface": [
+                  {
+                    "name": "clients",
+                    "tenant": "customerx",
+                    "address": [
+                      {
+                        "ipAddress": "192.168.64.1",
+                        "prefixLength": "24"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "wan1",
+                "pciAddress": {{ wan1_pci }},
+                "networkInterface": [
+                  {
+                    "name": "internet",
+                    "interRouterSecurity": "aes1",
+                    "address": [
+                      {
+                        "ipAddress": "1.1.1.128",
+                        "prefixLength": "24",
+                        "gateway": "1.1.1.1"
+                      }
+                    ],
+                    "neighborhood": [
+                      {
+                        "name": "internet",
+                        "vector": "broadband"
+                      }
+                    ],
+                    "conductor": "true",
+                    "sourceNat": "true"
+                  }
+                ]
+              }
+            ],
+            "reverseSsh": {},
+            "powerSaver": "true"
+          }
+        ],
+        "peer": [
+          {
+            "name": "{{ instance.routerName }}",
+            "authorityName": "Authority128",
+            "routerName": "{{ instance.routerName }}"
+          }
+        ],
+        "system": {
+          "logLevel": "warning"
+        },
+        "serviceRoute": [
+          {
+            "name": "datacenter1-route",
+            "serviceName": "testservice",
+            "peer": "{{ instance.routerName }}"
+          },
+{% for service_name in service_routes %}
+          {
+            "name": "svr-{{ service_name }}",
+            "serviceName": "{{ service_name }}",
+            "peer": "{{ instance.routerName }}"
+          }{% if forloop.last == false %},{% endif %}
+{% endfor %}
+        ],
+        "routing": [
+          {
+            "type": "rt:default-instance"
+          }
+        ]
+      }
+    ]
+  }
+}
+{% endfor %}

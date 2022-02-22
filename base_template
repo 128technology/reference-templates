@@ -1,0 +1,132 @@
+{% for instance in instances %}
+{% editgroup %}
+{
+  "authority": {
+    "router": [
+      {
+        "name": "seattlesite1",
+        "node": [
+          {
+            "name": "branchoffice1",
+            "role": "combo",
+            "deviceInterface": [
+              {
+                "name": "mpls1",
+                "pciAddress": "0000:00:04.0",
+                "networkInterface": [
+                  {
+                    "name": "dc1",
+                    "interRouterSecurity": "aes1",
+                    "address": [
+                      {
+                        "ipAddress": "10.0.128.0",
+                        "prefixLength": "31",
+                        "gateway": "10.0.128.1"
+                      }
+                    ],
+                    "adjacency": [
+                      {
+                        "ipAddress": "10.0.128.1",
+                        "peer": "bostonsite1",
+                        "interRouterSecurity": "aes1"
+                      }
+                    ],
+                    "neighborhood": [
+                      {
+                        "name": "mpls",
+                        "vector": "mpls"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "lan1",
+                "pciAddress": "0000:00:03.0",
+                "networkInterface": [
+                  {
+                    "name": "clients",
+                    "tenant": "customerx",
+                    "address": [
+                      {
+                        "ipAddress": "192.168.64.1",
+                        "prefixLength": "24"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "wan1",
+                "pciAddress": "0000:00:05.0",
+                "networkInterface": [
+                  {
+                    "name": "internet",
+                    "interRouterSecurity": "aes1",
+                    "address": [
+                      {
+                        "ipAddress": "1.1.1.128",
+                        "prefixLength": "24",
+                        "gateway": "1.1.1.1"
+                      }
+                    ],
+                    "neighborhood": [
+                      {
+                        "name": "internet",
+                        "vector": "broadband"
+                      }
+                    ],
+                    "conductor": "true",
+                    "sourceNat": "true"
+                  }
+                ]
+              }
+            ],
+            "reverseSsh": {},
+            "powerSaver": "true"
+          }
+        ],
+        "peer": [
+          {
+            "name": "bostonsite1",
+            "authorityName": "Authority128",
+            "routerName": "bostonsite1"
+          }
+        ],
+        "system": {
+          "logLevel": "warning"
+        },
+        "serviceRoute": [
+          {
+            "name": "datacenter1-route",
+            "serviceName": "testservice",
+            "peer": "bostonsite1"
+          },
+          {
+            "name": "svr-testserver2",
+            "serviceName": "testservice2",
+            "peer": "bostonsite1"
+          },
+          {
+            "name": "svr-dnat-testservice3",
+            "serviceName": "dnat-testservice3",
+            "peer": "bostonsite1"
+          },
+          {
+            "name": "svr-lb-testservice",
+            "serviceName": "lb-testservice",
+            "peer": "bostonsite1"
+          }
+        ],
+        "routing": [
+          {
+            "type": "rt:default-instance"
+          }
+        ],
+        "interNodeSecurity": "aes1",
+        "locationCoordinates": "+47.6062-122.3321/"
+      }
+    ]
+  }
+}
+{% endfor %}

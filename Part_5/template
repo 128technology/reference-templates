@@ -1,0 +1,59 @@
+{% for instance in instances %}
+
+{% capture network %}{{ instance.rxLanNetwork }}/26{% endcapture %}
+{%- assign ip_addresses = network | network_hosts %}
+
+{% editgroup %}
+{
+  "authority": {
+    "router": [
+      {
+        "name": "{{ instance.routerName }}",
+        "node": [
+          {
+            "name": "{{ instance.nodeName }}",
+              {
+                "name": "wan2",
+                "pciAddress": "0000:00:06.0",
+                "networkInterface": [
+                  {
+                    "name": "internet",
+                    "interRouterSecurity": "aes1",
+                    "address": [
+                      {
+                        "ipAddress": "{{ ip_addresses[1] }}",
+                        "prefixLength": "26",
+                        "inSubnetArpPrefix": [
+                          "{{ ip_addresses[3] }}/32",
+                          "{{ ip_addresses[7] }}/32",
+                          "{{ ip_addresses[8] }}/32",
+                          "{{ ip_addresses[9] }}/32",
+                          "{{ ip_addresses[10] }}/32",
+                          "{{ ip_addresses[12] }}/32",
+                          "{{ ip_addresses[23] }}/32",
+                          "{{ ip_addresses[24] }}/32",
+                          "{{ ip_addresses[25] }}/32",
+                          "{{ ip_addresses[40] }}/32",
+                          "{{ ip_addresses[61] }}/32"
+                        ]
+                      }
+                    ],
+                    "neighborhood": [
+                      {
+                        "name": "internet",
+                        "vector": "broadband"
+                      }
+                    ],
+                    "conductor": "true",
+                    "sourceNat": "true"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+{% endfor %}

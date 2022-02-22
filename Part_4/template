@@ -1,0 +1,42 @@
+{% for instance in instances %}
+
+{%- assign service_dict = "
+  192.168.10.1:service_1,service_2#
+  192.168.30.3:service_3,service_4#
+  192.168.40.4:service_5,service_5#
+  192.168.70.7:service_6,service_7#
+  192.168.80.8:service_8,service_9#
+  192.168.90.9:service_10" | strip | split: "#"
+%}
+
+{% editgroup %}
+{
+  "authority": {
+    "router": [
+      {
+        "name": "{{ instance.routerName }}",
+        "serviceRoute": [
+{% for item in service_dict %}
+          {% assign dictKeyVal = item | split: ":" %}
+          {% assign ip = dictKeyVal[0] %}
+          {% assign dictValue = dictKeyVal[1] | strip %}
+          {% assign service_list = dictValue | split: "," %}
+    {% for service in service_list %}
+          {
+            "name": "{{ service | strip }}_local_route",
+            "serviceName": "{{ service | remove: "'" }}",
+            "natTarget": "{{ ip | strip | remove: "'" }}"
+          },
+    {% endfor %}
+{% endfor %}
+          {
+            "name": "datacenter1-route",
+            "serviceName": "testservice",
+            "peer": "{{ instance.routerName }}"
+          }
+        ]
+      }
+    ]
+  }
+}
+{% endfor %}

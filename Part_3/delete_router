@@ -1,0 +1,13 @@
+{% for instance in instances %}
+{% editgroup %}
+{
+  "authority": {
+    "router": [
+      {
+        "_value": { "name": "{{ instance.routerName }}" },
+        "_operation": "delete"
+      }
+    ]
+  }
+}
+{% endfor %}

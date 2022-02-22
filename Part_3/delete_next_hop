@@ -1,0 +1,26 @@
+{% for instance in instances %}
+
+{% editgroup %}
+{
+  "authority": {
+    "router": [
+      {
+        "name": "{{ instance.storeId }}",
+        "serviceRoute": [
+          {
+            "name": "service_route_1",
+            "serviceName": "service_1",
+            "generated": "false",
+            "nextHop": [
+              {
+                "_value": { "nodeName": "{{ instance.nodeName }}", "interface": "wan1" },
+                "_operation": "delete"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+{% endfor %}

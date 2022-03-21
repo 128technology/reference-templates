@@ -1,0 +1,25 @@
+{
+  "authority": {
+    "router": [
+      {
+        "name": "{{ instance.storeId }}",
+        "natPool": [
+          {
+            "name": "branch-nat-pool",
+            "addressPool": [
+              {
+                "address": "192.168.20.10/32",
+                "tenantName": [
+                  {
+                    "_value": "MPLS.LAN.Branch",
+                    "_operation": "delete"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
